@@ -10,7 +10,7 @@ A simple, single-page payroll calculator that turns a Basic Salary into Gross an
 - One-click **Reset** to default rates
 - Indian number formatting (₹1,23,456)
 - Responsive, mobile-friendly layout
-
+- You can change HRA, DA, PF also
 ## How it's calculated
 
 ```
