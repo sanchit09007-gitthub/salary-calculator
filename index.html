@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SALARY CALCULATOR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4EFE3;
+    --paper-line:#D8CDB2;
+    --ledger:#1F3D2B;
+    --ledger-2:#2A4E38;
+    --gold:#C89B3C;
+    --ink:#332B1F;
+    --ink-soft:#6B6152;
+    --red:#8B3A2B;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      repeating-linear-gradient(180deg, transparent, transparent 37px, var(--paper-line) 38px);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+
+  .wrap{max-width:720px; margin:0 auto;}
+
+  /* header */
+  .masthead{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    border-bottom:3px double var(--ledger);
+    padding-bottom:14px; margin-bottom:6px;
+  }
+  .masthead h1{
+    font-family:'Fraunces', serif; font-weight:700; font-optical-sizing:auto;
+    font-size:clamp(28px,6vw,40px); color:var(--ledger); margin:0; letter-spacing:0.4px;
+    text-transform:uppercase;
+  }
+  .masthead .mark{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft);
+    text-align:right; line-height:1.5; text-transform:uppercase; letter-spacing:0.08em;
+  }
+  .subline{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-soft);
+    letter-spacing:0.04em; margin:10px 0 28px;
+  }
+
+  /* entry card */
+  .card{
+    background:#FBF8F1; border:1px solid var(--paper-line); border-radius:2px;
+    box-shadow:0 1px 0 var(--paper-line), 0 10px 24px -18px rgba(31,61,43,0.4);
+    padding:22px 20px 8px; margin-bottom:22px;
+  }
+  .field-basic label{
+    display:block; font-family:'IBM Plex Mono', monospace; font-size:12px;
+    text-transform:uppercase; letter-spacing:0.08em; color:var(--ledger); margin-bottom:8px;
+  }
+  .basic-input-row{
+    display:flex; align-items:baseline; gap:8px; border-bottom:2px solid var(--ledger);
+    padding-bottom:10px;
+  }
+  .rupee{font-family:'Fraunces', serif; font-size:28px; color:var(--gold); font-weight:600;}
+  input#basic{
+    flex:1; border:none; background:transparent; outline:none;
+    font-family:'Fraunces', serif; font-size:clamp(26px,5vw,34px); font-weight:600;
+    color:var(--ink); min-width:0;
+  }
+  input#basic::placeholder{color:#B9AF9A; font-weight:500;}
+  .hint{font-size:12px; color:var(--ink-soft); margin:10px 0 18px; font-style:italic;}
+
+  /* rate rail — auto-filled, editable */
+  .rail-title{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--ink-soft); margin:22px 0 10px; display:flex; justify-content:space-between; align-items:center;
+  }
+  .reset-btn{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ledger);
+    background:none; border:1px solid var(--ledger); border-radius:2px; padding:3px 8px;
+    cursor:pointer; letter-spacing:0.04em;
+  }
+  .reset-btn:hover{background:var(--ledger); color:var(--paper);}
+  .reset-btn:focus-visible, input:focus-visible, .basic-input-row:focus-within{outline:2px solid var(--gold); outline-offset:2px;}
+
+  .rate-row{
+    display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:10px;
+    padding:10px 0; border-bottom:1px dashed var(--paper-line);
+  }
+  .rate-row:last-child{border-bottom:none;}
+  .rate-row .label{font-size:14px; color:var(--ink); text-transform:uppercase; letter-spacing:0.02em;}
+  .rate-row .note{display:block; font-size:11px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+  .pct-input{
+    width:58px; text-align:right; font-family:'IBM Plex Mono', monospace; font-size:13px;
+    border:1px solid var(--paper-line); border-radius:2px; padding:5px 6px; background:#fff;
+  }
+  .pct-input.disabled{background:#F0EBDD; color:var(--ink-soft);}
+  .amt{
+    font-family:'IBM Plex Mono', monospace; font-size:15px; min-width:98px; text-align:right;
+    color:var(--ledger); font-weight:500;
+  }
+
+  /* result — passbook stamp block */
+  .ledger-block{
+    margin-top:28px; border:1px solid var(--ledger); border-radius:2px; overflow:hidden;
+  }
+  .ledger-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:11px 16px; font-family:'IBM Plex Mono', monospace; font-size:13.5px;
+    background:#FBF8F1; border-bottom:1px solid var(--paper-line);
+  }
+  .ledger-row.deduct{color:var(--red);}
+  .ledger-row .l{color:var(--ink-soft); letter-spacing:0.03em; text-transform:uppercase;}
+  .ledger-row .v{color:var(--ink); font-weight:500;}
+  .ledger-row.deduct .v{color:var(--red);}
+  .ledger-row.gross{background:#EFE7D3; font-weight:600;}
+  .ledger-row.gross .v{color:var(--ledger);}
+
+  .net-band{
+    background:var(--ledger); color:var(--paper); padding:20px 16px;
+    display:flex; justify-content:space-between; align-items:center; position:relative;
+  }
+  .net-band .l{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; text-transform:uppercase;
+    letter-spacing:0.1em; color:#CFE0D2;
+  }
+  .net-band .v{
+    font-family:'Fraunces', serif; font-size:clamp(26px,5.5vw,34px); font-weight:700; color:var(--gold);
+  }
+  .stamp{
+    position:absolute; top:-14px; right:16px;
+    font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.1em;
+    color:var(--ledger); background:var(--gold); padding:3px 9px; border-radius:2px;
+    transform:rotate(-3deg); box-shadow:0 2px 6px rgba(0,0,0,0.25);
+  }
+
+  footer{
+    text-align:center; font-family:'IBM Plex Mono', monospace; font-size:11px;
+    color:var(--ink-soft); margin-top:26px; letter-spacing:0.06em; text-transform:uppercase;
+  }
+
+  .empty-msg{
+    text-align:center; padding:30px 10px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px; letter-spacing:0.03em; text-transform:uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <h1>Salary Calculator</h1>
+    <div class="mark">Payroll&nbsp;Register</div>
+  </div>
+
+  <div class="card">
+    <div class="field-basic">
+      <label for="basic">Basic Salary</label>
+      <div class="basic-input-row">
+        <span class="rupee">₹</span>
+        <input type="number" id="basic" placeholder="e.g. 40000" min="0" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="rail-title">
+      <span>Components &amp; Rates</span>
+      <button class="reset-btn" id="resetBtn" type="button">Reset</button>
+    </div>
+
+    <div class="rate-row">
+      <div class="label">HRA</div>
+      <input type="number" class="pct-input" id="hraPct" value="40">
+      <div class="amt" id="hraAmt">₹0</div>
+    </div>
+    <div class="rate-row">
+      <div class="label">DA</div>
+      <input type="number" class="pct-input" id="daPct" value="10">
+      <div class="amt" id="daAmt">₹0</div>
+    </div>
+    <div class="rate-row">
+      <div class="label">Other Allowances</div>
+      <input type="number" class="pct-input" id="otherAmt" value="1600" style="width:80px;">
+      <div class="amt" id="otherAmtView">₹1,600</div>
+    </div>
+    <div class="rate-row">
+      <div class="label">Employee PF</div>
+      <input type="number" class="pct-input" id="pfPct" value="12">
+      <div class="amt" id="pfAmt">₹0</div>
+    </div>
+    <div class="rate-row">
+      <div class="label">Professional Tax</div>
+      <input type="number" class="pct-input" id="ptAmt" value="200" style="width:80px;">
+      <div class="amt" id="ptAmtView">₹200</div>
+    </div>
+  </div>
+
+  <div id="resultArea">
+    <div class="empty-msg">Enter Basic Salary To Generate The Ledger</div>
+  </div>
+
+  <footer>Developed By Sanchit Raj</footer>
+</div>
+
+<script>
+  const basicInput = document.getElementById('basic');
+  const hraPct = document.getElementById('hraPct');
+  const daPct = document.getElementById('daPct');
+  const otherAmtInput = document.getElementById('otherAmt');
+  const pfPct = document.getElementById('pfPct');
+  const ptAmtInput = document.getElementById('ptAmt');
+  const resultArea = document.getElementById('resultArea');
+  const resetBtn = document.getElementById('resetBtn');
+
+  const DEFAULTS = { hra: 40, da: 10, other: 1600, pf: 12, pt: 200 };
+
+  function fmt(n){
+    return '₹' + Math.round(n).toLocaleString('en-IN');
+  }
+
+  function render(){
+    const basic = parseFloat(basicInput.value) || 0;
+    const hra = basic * (parseFloat(hraPct.value)||0) / 100;
+    const da = basic * (parseFloat(daPct.value)||0) / 100;
+    const other = parseFloat(otherAmtInput.value) || 0;
+    const pf = basic * (parseFloat(pfPct.value)||0) / 100;
+    const pt = parseFloat(ptAmtInput.value) || 0;
+
+    document.getElementById('hraAmt').textContent = fmt(hra);
+    document.getElementById('daAmt').textContent = fmt(da);
+    document.getElementById('otherAmtView').textContent = fmt(other);
+    document.getElementById('pfAmt').textContent = fmt(pf);
+    document.getElementById('ptAmtView').textContent = fmt(pt);
+
+    if(basic <= 0){
+      resultArea.innerHTML = '<div class="empty-msg">Enter Basic Salary To Generate The Ledger</div>';
+      return;
+    }
+
+    const gross = basic + hra + da + other;
+    const totalDeductions = pf + pt;
+    const net = gross - totalDeductions;
+
+    resultArea.innerHTML = `
+      <div class="ledger-block">
+        <div class="ledger-row"><span class="l">Basic Salary</span><span class="v">${fmt(basic)}</span></div>
+        <div class="ledger-row"><span class="l">+ HRA</span><span class="v">${fmt(hra)}</span></div>
+        <div class="ledger-row"><span class="l">+ DA</span><span class="v">${fmt(da)}</span></div>
+        <div class="ledger-row"><span class="l">+ Other Allowances</span><span class="v">${fmt(other)}</span></div>
+        <div class="ledger-row gross"><span class="l">= Gross Salary</span><span class="v">${fmt(gross)}</span></div>
+        <div class="ledger-row deduct"><span class="l">− Employee PF</span><span class="v">${fmt(pf)}</span></div>
+        <div class="ledger-row deduct"><span class="l">− Professional Tax</span><span class="v">${fmt(pt)}</span></div>
+        <div class="net-band">
+          <span class="stamp">Net Payable</span>
+          <span class="l">Net Salary</span>
+          <span class="v">${fmt(net)}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  [basicInput, hraPct, daPct, otherAmtInput, pfPct, ptAmtInput].forEach(el=>{
+    el.addEventListener('input', render);
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    hraPct.value = DEFAULTS.hra;
+    daPct.value = DEFAULTS.da;
+    otherAmtInput.value = DEFAULTS.other;
+    pfPct.value = DEFAULTS.pf;
+    ptAmtInput.value = DEFAULTS.pt;
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>
