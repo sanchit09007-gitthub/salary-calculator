@@ -28,7 +28,7 @@ Just open `index.html` in any browser.
 
 Enable GitHub Pages (Settings → Pages → Deploy from branch → `main` / root) and your site will be at:
 
-`https://<your-username>.github.io/<repo-name>/`
+https://sanchit09007-gitthub.github.io/salary-calculator/
 
 ## Disclaimer
 
